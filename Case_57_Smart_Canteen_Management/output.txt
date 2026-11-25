@@ -1,0 +1,86 @@
+==============================================================
+          SMART CANTEEN ORDER & STOCK MANAGEMENT SYSTEM
+==============================================================
+
+  MENU: 1. View Stock  2. Place Order  3. Order History  4. Daily Summary  5. Exit
+  Enter choice (1-5): 
+
+  ----------------------------------------------------------
+  Code   Item Name           Price(Rs)  Available     Sold
+  ----------------------------------------------------------
+  C1     Masala Dosa             45.00         20        0
+  C2     Idli Sambar             30.00         25        0
+  C3     Veg Fried Rice          70.00         15        0
+  C4     Filter Coffee           20.00         30        0
+  C5     Samosa Plate            25.00         18        0
+  ----------------------------------------------------------
+
+  MENU: 1. View Stock  2. Place Order  3. Order History  4. Daily Summary  5. Exit
+  Enter choice (1-5): 
+  Enter item code (C1-C5):   Enter quantity: 
+  ORDER #1 CONFIRMED: 4 x Masala Dosa (C1) | Stock left: 16
+    Subtotal: Rs.180.00 | GST (5%): Rs.9.00 | Bill Total: Rs.189.00
+
+  MENU: 1. View Stock  2. Place Order  3. Order History  4. Daily Summary  5. Exit
+  Enter choice (1-5): 
+  Enter item code (C1-C5):   Enter quantity: 
+  ORDER #2 CONFIRMED: 15 x Veg Fried Rice (C3) | Stock left: 0
+    Subtotal: Rs.1050.00 | GST (5%): Rs.52.50 | Bill Total: Rs.1102.50
+
+  MENU: 1. View Stock  2. Place Order  3. Order History  4. Daily Summary  5. Exit
+  Enter choice (1-5): 
+  Enter item code (C1-C5):   Enter quantity: 
+  REJECTED: Requested 2 x Veg Fried Rice, only 0 left in stock.
+
+  MENU: 1. View Stock  2. Place Order  3. Order History  4. Daily Summary  5. Exit
+  Enter choice (1-5): 
+  Enter item code (C1-C5):   Enter quantity: 
+  REJECTED: Quantity must be a positive whole number.
+
+  MENU: 1. View Stock  2. Place Order  3. Order History  4. Daily Summary  5. Exit
+  Enter choice (1-5): 
+  Enter item code (C1-C5): 
+  REJECTED: Unknown item code 'X9'.
+
+  MENU: 1. View Stock  2. Place Order  3. Order History  4. Daily Summary  5. Exit
+  Enter choice (1-5): 
+  Enter item code (C1-C5):   Enter quantity: 
+  ORDER #3 CONFIRMED: 6 x Samosa Plate (C5) | Stock left: 12
+    Subtotal: Rs.150.00 | GST (5%): Rs.7.50 | Bill Total: Rs.157.50
+
+  MENU: 1. View Stock  2. Place Order  3. Order History  4. Daily Summary  5. Exit
+  Enter choice (1-5): 
+  Enter item code (C1-C5):   Enter quantity: 
+  ORDER #4 CONFIRMED: 5 x Idli Sambar (C2) | Stock left: 20
+    Subtotal: Rs.150.00 | GST (5%): Rs.7.50 | Bill Total: Rs.157.50
+
+  MENU: 1. View Stock  2. Place Order  3. Order History  4. Daily Summary  5. Exit
+  Enter choice (1-5): 
+  ---- ORDER HISTORY ----
+  #1  C1 Masala Dosa      x4   -> Rs. 189.00
+  #2  C3 Veg Fried Rice   x15  -> Rs.1102.50
+  #3  C5 Samosa Plate     x6   -> Rs. 157.50
+  #4  C2 Idli Sambar      x5   -> Rs. 157.50
+
+  MENU: 1. View Stock  2. Place Order  3. Order History  4. Daily Summary  5. Exit
+  Enter choice (1-5): 
+
+  ==========================================================
+               DAILY CANTEEN SALES & STOCK SUMMARY
+  ==========================================================
+  Orders Fulfilled : 4
+  Total Items Sold : 30
+  Gross Sales      : Rs. 1530.00
+  GST Collected    : Rs. 76.50
+  Total Revenue    : Rs. 1606.50
+
+  ----------------------------------------------------------
+  Code   Item Name           Price(Rs)  Available     Sold
+  ----------------------------------------------------------
+  C1     Masala Dosa             45.00         16        4
+  C2     Idli Sambar             30.00         20        5
+  C3     Veg Fried Rice          70.00        OUT       15
+  C4     Filter Coffee           20.00         30        0
+  C5     Samosa Plate            25.00         12        6
+  ----------------------------------------------------------
+  Closing canteen counter. Goodbye!

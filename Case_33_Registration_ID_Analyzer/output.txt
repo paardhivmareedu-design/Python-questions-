@@ -1,0 +1,42 @@
+========================================================================================
+                     CAMPUS REGISTRATION IDENTIFIER ANALYZER
+========================================================================================
+VALID RECORDS (EXTRACTED COMPONENTS):
+Reg ID         Batch Year   Branch   Department             Roll Serial
+----------------------------------------------------------------------------------------
+26-CSE-0626    2026         CSE      Computer Science       0626
+26-AID-0104    2026         AID      AI & Data Science      0104
+25-ECE-0318    2025         ECE      Electronics & Comm.    0318
+24-MEC-0045    2024         MEC      Mechanical Engg.       0045
+23-CIV-0211    2023         CIV      Civil Engg.            0211
+26-CSE-0524    2026         CSE      Computer Science       0524
+22-EEE-0098    2022         EEE      Electrical Engg.       0098
+
+CLASSIFICATION BY BRANCH:
+  CSE (Computer Science): 2 student(s)
+  ECE (Electronics & Comm.): 1 student(s)
+  EEE (Electrical Engg.): 1 student(s)
+  MEC (Mechanical Engg.): 1 student(s)
+  CIV (Civil Engg.): 1 student(s)
+  AID (AI & Data Science): 1 student(s)
+
+CLASSIFICATION BY ADMISSION YEAR:
+  Batch 2022: 1 student(s)
+  Batch 2023: 1 student(s)
+  Batch 2024: 1 student(s)
+  Batch 2025: 1 student(s)
+  Batch 2026: 3 student(s)
+
+INVALID IDENTIFIERS:
+----------------------------------------------------------------------------------------
+  '26-cse-0112' -> Branch code 'cse' must be 3 uppercase letters
+  '26CSE0626' -> Expected length 11 (YY-BBB-NNNN), got 9
+  '19-CSE-0401' -> Admission year '2019' outside allowed range 2021-2026
+  '25-BIO-0120' -> Unknown branch code 'BIO'
+  '26-ECE-0000' -> Serial number cannot be '0000'
+
+DUPLICATE VALID IDENTIFIERS DETECTED:
+  - 26-CSE-0626 (appeared more than once)
+----------------------------------------------------------------------------------------
+Summary: 7 unique valid, 1 duplicate, 5 invalid (out of 13 inputs).
+========================================================================================

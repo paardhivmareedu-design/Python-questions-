@@ -1,0 +1,30 @@
+==============================================================================================
+                    TUPLE-BASED EMPLOYEE SHIFT CONFLICT DETECTION
+==============================================================================================
+Total Shift Tuples: 10 | Valid: 9 | Invalid: 1
+----------------------------------------------------------------------------------------------
+
+CONFLICTING SHIFT PAIRS DETECTED:
+  EMP01 (Aarav) on Monday:
+    Shift A: 09:00-13:00 (Helpdesk)  <-->  Shift B: 12:00-16:00 (Lab Duty)
+    Overlap: 12:00-13:00 (60 minutes)
+  EMP03 (Charan) on Wednesday:
+    Shift A: 10:00-15:00 (Server Ops)  <-->  Shift B: 14:30-18:00 (Network)
+    Overlap: 14:30-15:00 (30 minutes)
+  EMP03 (Charan) on Wednesday:
+    Shift A: 10:00-15:00 (Server Ops)  <-->  Shift B: 11:00-13:00 (Audit)
+    Overlap: 11:00-13:00 (120 minutes)
+
+EMPLOYEE CONFLICT SUMMARY:
+  Employees WITH conflicts   : EMP01 (Aarav), EMP03 (Charan)
+  Conflict-free employees    : EMP02 (Bhavya), EMP04 (Deepika)
+
+SCHEDULED WORKLOAD (VALID SHIFTS):
+  EMP01 Aarav      : 3 shift(s), 12.00 hrs [CONFLICT]
+  EMP02 Bhavya     : 2 shift(s),  8.00 hrs [OK]
+  EMP03 Charan     : 3 shift(s), 10.50 hrs [CONFLICT]
+  EMP04 Deepika    : 1 shift(s),  8.00 hrs [OK]
+
+INVALID SHIFT TUPLES:
+  EMP05 (Eshwar) Friday 14:00-11:00 -> Invalid time format or end <= start
+==============================================================================================

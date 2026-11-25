@@ -1,0 +1,32 @@
+====================================================================================
+              MULTI-BRANCH SALES MATRIX COMPARISON (5-DAY UNITS SOLD)
+====================================================================================
+Branch                Laptop      Tablet       Phone  Headphones    Branch Total
+------------------------------------------------------------------------------------
+Vijayawada                70          95         164         120             449
+Guntur                    56         130         106          80             372
+Visakhapatnam            130         105         170         190             595
+Tirupati                  80          77         135         100             392
+------------------------------------------------------------------------------------
+Product Total            336         407         575         490            1808
+====================================================================================
+
+BEST-PERFORMING PRODUCT BY BRANCH:
+  Vijayawada      -> Phone (164 units)
+  Guntur          -> Tablet (130 units)
+  Visakhapatnam   -> Headphones (190 units)
+  Tirupati        -> Phone (135 units)
+
+BRANCH RANKING (HIGHEST TO LOWEST SALES):
+  #1 Visakhapatnam   :  595 units (32.9% share)
+  #2 Vijayawada      :  449 units (24.8% share)
+  #3 Tirupati        :  392 units (21.7% share)
+  #4 Guntur          :  372 units (20.6% share)
+
+DAILY SALES TOTALS ACROSS ALL BRANCHES:
+  Mon: 331 units
+  Tue: 355 units
+  Wed: 330 units
+  Thu: 376 units
+  Fri: 416 units
+  Peak Sales Day: Fri (416 units)
