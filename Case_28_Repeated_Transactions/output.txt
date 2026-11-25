@@ -1,0 +1,24 @@
+============================================================================================
+          REPEATED TRANSACTION & THRESHOLD AUDIT (Limit: Rs.50000)
+============================================================================================
+Total Transactions Scanned : 9
+Clean Transactions         : 1
+Suspicious Entries Flagged : 8
+--------------------------------------------------------------------------------------------
+
+SUSPICIOUS ENTRIES:
+Row Txn ID   Account      Amount Merchant       Flags
+--------------------------------------------------------------------------------------------
+  1 TXN901   AC1001      4200.00 CampusStore    Repeat Pattern (2x)
+  2 TXN902   AC1002     18500.00 TechMart       Duplicate ID (2x); Repeat Pattern (2x)
+  3 TXN903   AC1001      4200.00 CampusStore    Repeat Pattern (2x)
+  4 TXN904   AC1003     72000.00 ElectroHub     Above Rs.50000
+  5 TXN902   AC1002     18500.00 TechMart       Duplicate ID (2x); Repeat Pattern (2x)
+  7 TXN906   AC1005     55000.00 GoldCorner     Repeat Pattern (2x); Above Rs.50000
+  8 TXN907   AC1005     55000.00 GoldCorner     Repeat Pattern (2x); Above Rs.50000
+  9 TXN908   AC1006      -500.00 CafePoint      Invalid amount (<=0)
+
+CLEAN TRANSACTIONS:
+--------------------------------------------------------------------------------------------
+  Row 6: TXN905 | AC1004 | Rs. 1250.00 | BookHouse
+============================================================================================

@@ -1,0 +1,24 @@
+================================================================================================
+                    EXAMINATION RESULT & GRACE-MARK VALIDATION REPORT
+================================================================================================
+Roll    Name           Original Marks        Final Marks           Grace Total   Pct%  Result
+------------------------------------------------------------------------------------------------
+26B01   Nikhil Varma    84  79  91  76  82    84  79  91  76  82       0   412  82.40  Distinction
+26B02   Bhavana Rao     37  65  72  38  60    40  65  72  40  60       5   277  55.40  Second Class
+26B03   Charan Teja     35  36  37  68  70    35  36  37  68  70       0   246  49.20  Fail
+26B04   Keerthi S       32  74  81  69  77    32  74  81  69  77       0   333  66.60  Fail
+26B05   Prashanth K     42  41  44  40  43    42  41  44  40  43       0   210  42.00  Pass Class
+26B06   Swathi Reddy    98  95  99  92  94    98  95  99  92  94       0   478  95.60  Distinction
+26B07   Manoj Kumar     54  58  36  52  61    54  58  40  52  61       4   265  53.00  Second Class
+------------------------------------------------------------------------------------------------
+
+GRACE-MARK & FAILURE DETAILS:
+  26B02 (Bhavana Rao): Grace applied -> Maths +3 (37->40), Digital Logic +2 (38->40)
+  26B03 (Charan Teja): Grace not eligible -> Failed in Maths(35), Physics(36), Python(37)
+  26B04 (Keerthi S): Grace not eligible -> Failed in Maths(32)
+  26B07 (Manoj Kumar): Grace applied -> Python +4 (36->40)
+
+INVALID INPUT RECORDS:
+  26B08 (Bad Data): Mark 105 out of valid range 0..100
+------------------------------------------------------------------------------------------------
+Summary: 5 Passed (2 via grace), 2 Failed, 1 Invalid.

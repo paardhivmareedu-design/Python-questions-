@@ -1,0 +1,18 @@
+======================================================================================================
+                             RAILWAY FARE & RESERVATION SUMMARY
+======================================================================================================
+PNR      Passenger       Age  Dist Cls  Concession     Total Status            Penalty   Refund
+------------------------------------------------------------------------------------------------------
+PNR101   Ramesh Babu      65   620 3A   Senior 40%    610.24 CONFIRMED            0.00     0.00
+PNR102   Anjali Devi      29   340 SL   None          268.00 CONFIRMED            0.00     0.00
+PNR103   Rohan Sai         9   510 2A   Child 50%     635.60 CONFIRMED            0.00     0.00
+PNR104   Baby Aditi        3   400 3A   Infant Free     0.00 CONFIRMED            0.00     0.00
+PNR105   Suresh Kumar     42   750 2A   None         1682.00 CANCELLED_LATE     420.50  1261.50
+PNR106   Meena Kumari     58   180 SL   None          156.00 CANCELLED_EARLY     60.00    96.00
+PNR107   Vikram Joshi     34   450 3A   None          755.00 CANCELLED_LAST     377.50   377.50
+------------------------------------------------------------------------------------------------------
+Confirmed: 4 | Cancelled: 3 | Gross Billed: Rs.4106.84 | Refunds: Rs.1735.00 | Net Revenue: Rs.2371.84
+======================================================================================================
+
+REJECTED BOOKINGS:
+  PNR108 (Invalid Ticket): Invalid age or distance
