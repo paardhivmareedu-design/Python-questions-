@@ -1,39 +1,38 @@
 """Test cases for Case Study 28: Repeated Transaction Detection."""
 import os
+import subprocess
 import sys
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import solution
+SOL_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "solution.py")
 
 
 def run_tests():
-    clean, suspicious = solution.analyze_transactions(solution.TRANSACTIONS)
+    res = subprocess.run([sys.executable, SOL_PATH], capture_output=True, text=True)
+    assert res.returncode == 0
+    out = res.stdout
 
-    # Test 1: Only TXN905 (BookHouse) is completely clean in sample dataset
-    assert len(clean) == 1
-    assert clean[0][1] == "TXN905"
-    print("[PASS] Test 1: Clean transaction isolated accurately")
+    # Test 1: Summary counts
+    assert "Total Transactions Scanned : 9" in out
+    assert "Clean Transactions         : 1" in out
+    assert "Suspicious Entries Flagged : 8" in out
+    print("[PASS] Test 1: Clean vs suspicious transaction totals verified")
 
-    # Test 2: Duplicate TXN ID flagged for TXN902
-    txn902_rows = [item for item in suspicious if item[1] == "TXN902"]
-    assert len(txn902_rows) == 2
-    assert any("Duplicate ID" in r for r in txn902_rows[0][5])
-    print("[PASS] Test 2: Duplicate transaction ID detected")
+    # Test 2: Duplicate ID detected for TXN902
+    assert "TXN902" in out and "Duplicate ID (2x)" in out
+    print("[PASS] Test 2: Duplicate transaction ID flagged")
 
-    # Test 3: Repeated pattern with different TXN IDs (TXN901 & TXN903)
-    txn901 = [item for item in suspicious if item[1] == "TXN901"][0]
-    assert any("Repeat Pattern" in r for r in txn901[5])
-    print("[PASS] Test 3: Repeated account-amount-merchant pattern flagged")
+    # Test 3: Repeat pattern detected for TXN901 / TXN903
+    assert "TXN901" in out and "TXN903" in out and "Repeat Pattern (2x)" in out
+    print("[PASS] Test 3: Repeated payment pattern flagged")
 
-    # Test 4: High value threshold violation
-    txn904 = [item for item in suspicious if item[1] == "TXN904"][0]
-    assert any("Above Rs." in r for r in txn904[5])
-    print("[PASS] Test 4: Threshold violation > Rs.50,000 flagged")
+    # Test 4: High-value threshold and negative amount detected
+    assert "TXN904" in out and "Above Rs.50000" in out
+    assert "TXN908" in out and "Invalid amount (<=0)" in out
+    print("[PASS] Test 4: High-value breach and invalid amount flagged")
 
-    # Test 5: Negative amount flagged as invalid
-    txn908 = [item for item in suspicious if item[1] == "TXN908"][0]
-    assert any("Invalid" in r for r in txn908[5])
-    print("[PASS] Test 5: Invalid non-positive amount caught")
+    # Test 5: Clean transaction isolated
+    assert "Row 6: TXN905 | AC1004 | Rs. 1250.00 | BookHouse" in out
+    print("[PASS] Test 5: Clean transaction isolated accurately")
 
     print("\nAll 5 tests passed for Case Study 28.")
 

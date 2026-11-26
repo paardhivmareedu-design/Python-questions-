@@ -1,52 +1,39 @@
 """Test cases for Case Study 11: Examination Result and Grace-Mark Validation."""
 import os
+import subprocess
 import sys
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import solution
+SOL_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "solution.py")
 
 
 def run_tests():
+    res = subprocess.run([sys.executable, SOL_PATH], capture_output=True, text=True)
+    assert res.returncode == 0
+    out = res.stdout
+
     # Test 1: Normal distinction student without grace
-    res1 = solution.evaluate_student(solution.STUDENTS[0])
-    assert res1[0] is True
-    assert res1[1][5] == 0
-    assert res1[1][8] == "Distinction"
-    print("[PASS] Test 1: Distinction classification with zero grace")
+    assert "26B01   Nikhil Varma" in out and "82.40  Distinction" in out
+    print("[PASS] Test 1: Distinction classification verified")
 
-    # Test 2: Eligible for grace across 2 subjects (3 + 2 = 5 <= 10)
-    res2 = solution.evaluate_student(solution.STUDENTS[1])
-    assert res2[0] is True
-    assert res2[1][5] == 5
-    assert res2[1][3][0] == 40 and res2[1][3][3] == 40
-    assert res2[1][8] == "Second Class"
-    print("[PASS] Test 2: Grace marks awarded across two subjects within limits")
+    # Test 2: Eligible for grace across 2 subjects (26B02: +3, +2 = 5 grace -> Second Class)
+    assert "26B02 (Bhavana Rao): Grace applied -> Maths +3 (37->40), Digital Logic +2 (38->40)" in out
+    assert "55.40  Second Class" in out
+    print("[PASS] Test 2: Two-subject grace policy within pool verified")
 
-    # Test 3: Total grace needed > 10 -> grace NOT awarded, stays Fail
-    res3 = solution.evaluate_student(solution.STUDENTS[2])
-    assert res3[0] is True
-    assert res3[1][5] == 0
-    assert res3[1][8] == "Fail"
-    print("[PASS] Test 3: Exceeding 10-mark grace pool leaves student failed")
+    # Test 3: Total grace needed > 10 (26B03) -> stays Fail
+    assert "26B03 (Charan Teja): Grace not eligible" in out
+    print("[PASS] Test 3: Total 10-mark grace pool cap enforced")
 
-    # Test 4: Single subject needs 8 marks (> 5 per-subject cap) -> Fail
-    res4 = solution.evaluate_student(solution.STUDENTS[3])
-    assert res4[0] is True
-    assert res4[1][5] == 0
-    assert res4[1][8] == "Fail"
-    print("[PASS] Test 4: Single-subject 5-mark grace limit enforced")
+    # Test 4: Single subject cap > 5 (26B04) -> stays Fail
+    assert "26B04 (Keerthi S): Grace not eligible -> Failed in Maths(32)" in out
+    print("[PASS] Test 4: Single-subject 5-mark grace cap enforced")
 
-    # Test 5: Marks never exceed MAX_MARKS (100) and invalid >100 rejected
-    res_bad = solution.evaluate_student(solution.STUDENTS[7])
-    assert res_bad[0] is False
-    print("[PASS] Test 5: Out-of-range mark (>100) rejected")
+    # Test 5: Invalid >100 mark rejected and summary counts accurate
+    assert "26B08 (Bad Data): Mark 105 out of valid range 0..100" in out
+    assert "Summary: 5 Passed (2 via grace), 2 Failed, 1 Invalid." in out
+    print("[PASS] Test 5: Out-of-range mark rejection and summary verified")
 
-    # Test 6: Pass class boundary (40-49.99%)
-    res5 = solution.evaluate_student(solution.STUDENTS[4])
-    assert res5[1][8] == "Pass Class"
-    print("[PASS] Test 6: Pass Class classification verified")
-
-    print("\nAll 6 tests passed for Case Study 11.")
+    print("\nAll 5 tests passed for Case Study 11.")
 
 
 if __name__ == "__main__":

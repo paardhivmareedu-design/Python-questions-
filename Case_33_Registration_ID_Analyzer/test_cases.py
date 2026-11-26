@@ -1,45 +1,40 @@
 """Test cases for Case Study 33: Campus Registration Identifier Analyzer."""
 import os
+import subprocess
 import sys
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import solution
+SOL_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "solution.py")
 
 
 def run_tests():
-    # Test 1: Valid ID extraction
-    ok, reg, info, errs = solution.analyze_reg_id("26-CSE-0626")
-    assert ok is True
-    assert info == ("26-CSE-0626", "2026", "CSE", "Computer Science", "0626")
-    assert errs == []
-    print("[PASS] Test 1: Valid ID parsed into year, branch, department, and serial")
+    res = subprocess.run([sys.executable, SOL_PATH], capture_output=True, text=True)
+    assert res.returncode == 0
+    out = res.stdout
 
-    # Test 2: Whitespace trimmed cleanly
-    ok2, reg2, info2, _ = solution.analyze_reg_id("  25-ECE-0318  ")
-    assert ok2 is True and info2[0] == "25-ECE-0318"
-    print("[PASS] Test 2: Leading/trailing whitespace trimmed")
+    # Test 1: Valid ID component extraction
+    assert "26-CSE-0626    2026         CSE      Computer Science       0626" in out
+    assert "25-ECE-0318    2025         ECE      Electronics & Comm.    0318" in out
+    print("[PASS] Test 1: Valid IDs parsed into year, branch, department, and serial")
 
-    # Test 3: Lowercase branch rejected
-    ok3, _, _, errs3 = solution.analyze_reg_id("26-cse-0112")
-    assert ok3 is False and len(errs3) >= 1
-    print("[PASS] Test 3: Lowercase branch code rejected")
+    # Test 2: Branch and year classifications
+    assert "CSE (Computer Science): 2 student(s)" in out
+    assert "Batch 2026: 3 student(s)" in out
+    print("[PASS] Test 2: Branch and admission batch counts verified")
 
-    # Test 4: Wrong length / missing separators rejected
-    ok4, _, _, _ = solution.analyze_reg_id("26CSE0626")
-    assert ok4 is False
-    print("[PASS] Test 4: Malformed separator / wrong length rejected")
+    # Test 3: Format rejections (lowercase, missing hyphen, bad year, unknown branch, 0000)
+    assert "'26-cse-0112' -> Branch code 'cse' must be 3 uppercase letters" in out
+    assert "'26CSE0626' -> Expected length 11 (YY-BBB-NNNN), got 9" in out
+    assert "'19-CSE-0401' -> Admission year '2019' outside allowed range 2021-2026" in out
+    assert "'25-BIO-0120' -> Unknown branch code 'BIO'" in out
+    assert "'26-ECE-0000' -> Serial number cannot be '0000'" in out
+    print("[PASS] Test 3: All 5 malformed ID patterns rejected with specific reasons")
 
-    # Test 5: Out-of-range admission year rejected
-    ok5, _, _, errs5 = solution.analyze_reg_id("19-CSE-0401")
-    assert ok5 is False and any("year" in e.lower() for e in errs5)
-    print("[PASS] Test 5: Invalid admission year rejected")
+    # Test 4: Duplicate detection and summary count
+    assert "26-CSE-0626 (appeared more than once)" in out
+    assert "Summary: 7 unique valid, 1 duplicate, 5 invalid (out of 13 inputs)." in out
+    print("[PASS] Test 4: Duplicate identifier flagged and summary verified")
 
-    # Test 6: Zero serial number 0000 rejected
-    ok6, _, _, errs6 = solution.analyze_reg_id("26-ECE-0000")
-    assert ok6 is False and any("0000" in e for e in errs6)
-    print("[PASS] Test 6: Zero serial '0000' rejected")
-
-    print("\nAll 6 tests passed for Case Study 33.")
+    print("\nAll 4 tests passed for Case Study 33.")
 
 
 if __name__ == "__main__":

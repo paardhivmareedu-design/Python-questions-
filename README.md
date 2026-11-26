@@ -27,7 +27,7 @@
 Every case study directory contains all 10 required deliverables:
 - `README.md` — Problem statement, objectives, assumptions, algorithm, pseudocode, test cases, output, and conclusion
 - `flowchart.png` — Visual flowchart matching the algorithm
-- `solution.py` — Pure syllabus Python 3 solution
+- `solution.py` — Beginner-level pure syllabus Python 3 script (procedural flow, no functions/dicts/sets)
 - `test_cases.py` — Automated verification test suite
 - `output.txt` — Captured terminal output from running `solution.py`
 - `output_screenshot.png` — Terminal screenshot showing program output and passing tests
@@ -53,6 +53,6 @@ python3 Case_04_Employee_Payroll/test_cases.py
 
 ## Syllabus Compliance Notes
 
-- Built strictly using the assigned syllabus: computational thinking, algorithms, flowcharts, pseudocode, variables, data types, operators, conditional statements, loops (`for`/`while`/nested), strings, pattern/grid generation, lists, nested lists, tuples, tuple operations, and tuple unpacking.
-- Zero external packages, dictionaries, sets, or regular expressions are used in any `solution.py`.
+- Built strictly using the assigned beginner syllabus: computational thinking, algorithms, flowcharts, pseudocode, variables, data types, operators, conditional statements, loops (`for`/`while`/nested), strings, pattern/grid generation, lists, nested lists, tuples, tuple operations, and tuple unpacking.
+- Written as clear top-to-bottom beginner scripts: zero user-defined functions (`def`), dictionaries, sets, classes, comprehensions, or external packages are used in any `solution.py`.
 - All data used across programs (employee salaries, passenger PNRs, marks, transactions, canteen stock) is hypothetical sample data created for academic demonstration.

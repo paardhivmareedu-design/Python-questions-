@@ -3,12 +3,12 @@ Case Study 43: Multi-Branch Sales Matrix Comparison
 Name: Mareedu Paardhiv | Roll No: 26000626
 """
 
-BRANCHES = ["Vijayawada", "Guntur", "Visakhapatnam", "Tirupati"]
-PRODUCTS = ["Laptop", "Tablet", "Phone", "Headphones"]
-DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"]
+branches = ["Vijayawada", "Guntur", "Visakhapatnam", "Tirupati"]
+products = ["Laptop", "Tablet", "Phone", "Headphones"]
+days = ["Mon", "Tue", "Wed", "Thu", "Fri"]
 
-# 3D nested list: SALES_MATRIX[branch_index][product_index][day_index] (units sold)
-SALES_MATRIX = [
+# 3D nested list: sales_matrix[branch_index][product_index][day_index]
+sales_matrix = [
     # Vijayawada
     [
         [12, 15, 11, 14, 18],   # Laptop = 70
@@ -39,108 +39,100 @@ SALES_MATRIX = [
     ],
 ]
 
+num_branches = len(branches)
+num_products = len(products)
+num_days = len(days)
 
-def analyze_sales(matrix):
-    num_branches = len(matrix)
-    num_products = len(matrix[0])
-    num_days = len(matrix[0][0])
+bp_totals = []
+branch_totals = []
+product_totals = [0] * num_products
+day_totals = [0] * num_days
+grand_total = 0
 
-    # branch_product_totals[b][p] = 5-day sum for product p at branch b
-    branch_product_totals = []
-    branch_totals = []
-    product_totals = [0] * num_products
-    day_totals = [0] * num_days
+# Traverse 3D nested list using nested loops
+for b in range(num_branches):
+    row_totals = []
+    b_sum = 0
+    for p in range(num_products):
+        p_sum = 0
+        for d in range(num_days):
+            val = sales_matrix[b][p][d]
+            p_sum = p_sum + val
+            day_totals[d] = day_totals[d] + val
+        row_totals.append(p_sum)
+        product_totals[p] = product_totals[p] + p_sum
+        b_sum = b_sum + p_sum
+    bp_totals.append(row_totals)
+    branch_totals.append(b_sum)
+    grand_total = grand_total + b_sum
 
-    for b in range(num_branches):
-        row_totals = []
-        b_sum = 0
-        for p in range(num_products):
-            p_sum = 0
-            for d in range(num_days):
-                val = matrix[b][p][d]
-                p_sum += val
-                day_totals[d] += val
-            row_totals.append(p_sum)
-            product_totals[p] += p_sum
-            b_sum += p_sum
-        branch_product_totals.append(row_totals)
-        branch_totals.append(b_sum)
+# Find best-performing product for each branch
+best_per_branch = []
+for b in range(num_branches):
+    max_units = bp_totals[b][0]
+    best_names = [products[0]]
+    for p in range(1, num_products):
+        val = bp_totals[b][p]
+        if val > max_units:
+            max_units = val
+            best_names = [products[p]]
+        elif val == max_units:
+            best_names.append(products[p])
+    best_per_branch.append((branches[b], ", ".join(best_names), max_units))
 
-    # Best-performing product for each branch
-    best_per_branch = []
-    for b in range(num_branches):
-        max_units = branch_product_totals[b][0]
-        best_names = [PRODUCTS[0]]
-        for p in range(1, num_products):
-            val = branch_product_totals[b][p]
-            if val > max_units:
-                max_units = val
-                best_names = [PRODUCTS[p]]
-            elif val == max_units:
-                best_names.append(PRODUCTS[p])
-        best_per_branch.append((BRANCHES[b], ", ".join(best_names), max_units))
+# Rank branches descending using simple selection sort
+ranked_branches = []
+for b in range(num_branches):
+    ranked_branches.append((branch_totals[b], branches[b]))
 
-    # Rank branches descending using simple selection sort
-    ranked_branches = []
-    for b in range(num_branches):
-        ranked_branches.append((branch_totals[b], BRANCHES[b]))
-    for i in range(len(ranked_branches)):
-        best_idx = i
-        for j in range(i + 1, len(ranked_branches)):
-            if ranked_branches[j][0] > ranked_branches[best_idx][0]:
-                best_idx = j
-        ranked_branches[i], ranked_branches[best_idx] = ranked_branches[best_idx], ranked_branches[i]
+for i in range(len(ranked_branches)):
+    best_idx = i
+    for j in range(i + 1, len(ranked_branches)):
+        if ranked_branches[j][0] > ranked_branches[best_idx][0]:
+            best_idx = j
+    temp = ranked_branches[i]
+    ranked_branches[i] = ranked_branches[best_idx]
+    ranked_branches[best_idx] = temp
 
-    return branch_product_totals, branch_totals, product_totals, day_totals, best_per_branch, ranked_branches
+print("=" * 84)
+print("              MULTI-BRANCH SALES MATRIX COMPARISON (5-DAY UNITS SOLD)")
+print("=" * 84)
+header = f"{'Branch':<16}"
+for prod in products:
+    header = header + f"{prod:>12}"
+header = header + f"{'Branch Total':>16}"
+print(header)
+print("-" * 84)
 
+for b in range(num_branches):
+    line = f"{branches[b]:<16}"
+    for p in range(num_products):
+        line = line + f"{bp_totals[b][p]:>12}"
+    line = line + f"{branch_totals[b]:>16}"
+    print(line)
 
-def main():
-    bp_totals, b_totals, p_totals, d_totals, best_per_branch, ranked_branches = analyze_sales(SALES_MATRIX)
-    grand_total = sum(b_totals)
+print("-" * 84)
+prod_line = f"{'Product Total':<16}"
+for pt in product_totals:
+    prod_line = prod_line + f"{pt:>12}"
+prod_line = prod_line + f"{grand_total:>16}"
+print(prod_line)
+print("=" * 84)
 
-    print("=" * 84)
-    print("              MULTI-BRANCH SALES MATRIX COMPARISON (5-DAY UNITS SOLD)")
-    print("=" * 84)
-    header = f"{'Branch':<16}"
-    for prod in PRODUCTS:
-        header += f"{prod:>12}"
-    header += f"{'Branch Total':>16}"
-    print(header)
-    print("-" * 84)
+print("\nBEST-PERFORMING PRODUCT BY BRANCH:")
+for branch_name, prod_name, units in best_per_branch:
+    print(f"  {branch_name:<15} -> {prod_name} ({units} units)")
 
-    for b in range(len(BRANCHES)):
-        line = f"{BRANCHES[b]:<16}"
-        for p in range(len(PRODUCTS)):
-            line += f"{bp_totals[b][p]:>12}"
-        line += f"{b_totals[b]:>16}"
-        print(line)
+print("\nBRANCH RANKING (HIGHEST TO LOWEST SALES):")
+for rank in range(len(ranked_branches)):
+    tot, b_name = ranked_branches[rank]
+    share = (tot / grand_total) * 100.0
+    print(f"  #{rank + 1} {b_name:<15} : {tot:>4} units ({share:.1f}% share)")
 
-    print("-" * 84)
-    prod_line = f"{'Product Total':<16}"
-    for pt in p_totals:
-        prod_line += f"{pt:>12}"
-    prod_line += f"{grand_total:>16}"
-    print(prod_line)
-    print("=" * 84)
-
-    print("\nBEST-PERFORMING PRODUCT BY BRANCH:")
-    for branch_name, prod_name, units in best_per_branch:
-        print(f"  {branch_name:<15} -> {prod_name} ({units} units)")
-
-    print("\nBRANCH RANKING (HIGHEST TO LOWEST SALES):")
-    for rank in range(len(ranked_branches)):
-        tot, b_name = ranked_branches[rank]
-        share = (tot / grand_total) * 100.0
-        print(f"  #{rank + 1} {b_name:<15} : {tot:>4} units ({share:.1f}% share)")
-
-    print("\nDAILY SALES TOTALS ACROSS ALL BRANCHES:")
-    peak_day_idx = 0
-    for d in range(len(DAYS)):
-        if d_totals[d] > d_totals[peak_day_idx]:
-            peak_day_idx = d
-        print(f"  {DAYS[d]}: {d_totals[d]} units")
-    print(f"  Peak Sales Day: {DAYS[peak_day_idx]} ({d_totals[peak_day_idx]} units)")
-
-
-if __name__ == "__main__":
-    main()
+print("\nDAILY SALES TOTALS ACROSS ALL BRANCHES:")
+peak_day_idx = 0
+for d in range(num_days):
+    if day_totals[d] > day_totals[peak_day_idx]:
+        peak_day_idx = d
+    print(f"  {days[d]}: {day_totals[d]} units")
+print(f"  Peak Sales Day: {days[peak_day_idx]} ({day_totals[peak_day_idx]} units)")

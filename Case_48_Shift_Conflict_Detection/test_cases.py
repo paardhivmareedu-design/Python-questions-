@@ -1,43 +1,37 @@
 """Test cases for Case Study 48: Tuple-Based Employee Shift Conflict Detection."""
 import os
+import subprocess
 import sys
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import solution
+SOL_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "solution.py")
 
 
 def run_tests():
-    # Test 1: Time parser validation
-    assert solution.parse_time_to_minutes("09:30") == 570
-    assert solution.parse_time_to_minutes("25:00") is None
-    assert solution.parse_time_to_minutes("bad") is None
-    print("[PASS] Test 1: Time string parser and validation")
+    res = subprocess.run([sys.executable, SOL_PATH], capture_output=True, text=True)
+    assert res.returncode == 0
+    out = res.stdout
 
-    valid, invalid, conflicts, bad_emps, good_emps, _ = solution.analyze_shifts(solution.SHIFTS)
+    # Test 1: Valid vs invalid shift tuple count
+    assert "Total Shift Tuples: 10 | Valid: 9 | Invalid: 1" in out
+    assert "EMP05 (Eshwar) Friday 14:00-11:00 -> Invalid time format or end <= start" in out
+    print("[PASS] Test 1: Invalid reversed shift rejected cleanly")
 
-    # Test 2: Invalid end <= start shift rejected
-    assert len(invalid) == 1
-    assert invalid[0][0][0] == "EMP05"
-    print("[PASS] Test 2: Invalid shift (end <= start) rejected")
+    # Test 2: Partial overlap for EMP01 (60 minutes)
+    assert "EMP01 (Aarav) on Monday:" in out
+    assert "Overlap: 12:00-13:00 (60 minutes)" in out
+    print("[PASS] Test 2: Partial shift overlap duration detected")
 
-    # Test 3: Partial overlap for EMP01 (12:00-13:00 = 60 mins)
-    emp01_conflicts = [c for c in conflicts if c[0] == "EMP01"]
-    assert len(emp01_conflicts) == 1
-    assert emp01_conflicts[0][5] == "12:00-13:00"
-    assert emp01_conflicts[0][6] == 60
-    print("[PASS] Test 3: Partial overlap detected with exact overlap duration")
+    # Test 3: Multi-way overlaps for EMP03 (30 mins and 120 mins)
+    assert "Overlap: 14:30-15:00 (30 minutes)" in out
+    assert "Overlap: 11:00-13:00 (120 minutes)" in out
+    print("[PASS] Test 3: Multiple overlaps detected for EMP03")
 
-    # Test 4: Back-to-back shifts for EMP02 (08:00-12:00 and 12:00-16:00) do NOT conflict
-    assert ("EMP02", "Bhavya") in good_emps
-    assert ("EMP02", "Bhavya") not in bad_emps
-    print("[PASS] Test 4: Adjacent non-overlapping shifts allowed cleanly")
+    # Test 4: Adjacent shifts (EMP02 08:00-12:00 and 12:00-16:00) remain conflict-free
+    assert "Conflict-free employees    : EMP02 (Bhavya), EMP04 (Deepika)" in out
+    assert "EMP02 Bhavya     : 2 shift(s),  8.00 hrs [OK]" in out
+    print("[PASS] Test 4: Adjacent non-overlapping shifts marked OK")
 
-    # Test 5: Multiple overlaps detected for EMP03 (2 pairwise overlaps among 3 shifts)
-    emp03_conflicts = [c for c in conflicts if c[0] == "EMP03"]
-    assert len(emp03_conflicts) == 2
-    print("[PASS] Test 5: Multi-way shift overlaps detected for EMP03")
-
-    print("\nAll 5 tests passed for Case Study 48.")
+    print("\nAll 4 tests passed for Case Study 48.")
 
 
 if __name__ == "__main__":

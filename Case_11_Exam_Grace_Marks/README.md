@@ -19,19 +19,19 @@ Process marks across multiple subjects, apply subject-wise pass criteria and a s
 
 - There are 5 subjects (Maths, Physics, Python, Digital Logic, English), each out of 100 marks; pass mark is 40.
 - Grace pool is up to 10 marks total per student, with at most 5 grace marks allowed in any single subject.
-- All-or-nothing policy: grace marks are applied only if they make the student pass all 5 subjects.
+- All-or-nothing policy: grace marks are applied only if they enable the student to pass all 5 subjects.
 - Divisions for passing students: >=75% Distinction, 60-74.99% First Class, 50-59.99% Second Class, 40-49.99% Pass Class.
 
 ## 4. Algorithm
 
 ```text
 1. START
-2. Define SUBJECTS, MAX_MARKS = 100, PASS_MARKS = 40, MAX_GRACE_POOL = 10, MAX_GRACE_PER_SUBJECT = 5.
-3. For each student tuple (roll, name, marks), check length == 5 and all marks within 0..100.
-4. Scan subject marks to collect any subject with mark < 40 and compute shortfall = 40 - mark.
-5. Check eligibility: every shortfall <= 5 and sum of shortfalls <= 10.
-6. If failed subjects exist and grace makes all subjects pass, add shortfall to each failed subject capped at MAX_MARKS.
-7. Re-verify failed subjects, compute final total and percentage, and assign result division.
+2. Define subjects, max_marks = 100, pass_marks = 40, max_grace_pool = 10, and max_grace_per_subject = 5.
+3. For each student tuple (roll, name, marks), verify length == 5 and all marks are within 0..100.
+4. Scan subject marks to find any score < 40 and sum gap = 40 - m; check if any gap > 5 or total_needed > 10.
+5. Copy original marks into final_marks.
+6. If failed subjects exist and grace saves all subjects, add the shortfall to each failed subject capped at 100.
+7. Re-check failed subjects, compute total_score and pct, and classify into Distinction, First, Second, Pass, or Fail.
 8. Print original vs final marks table, grace allocation log, invalid records, and summary counts.
 9. END
 ```
@@ -44,32 +44,34 @@ Process marks across multiple subjects, apply subject-wise pass criteria and a s
 
 ```text
 BEGIN EXAM_GRACE_VALIDATION
-    CONST PASS <- 40, MAX_MARKS <- 100, POOL <- 10, PER_SUB <- 5
+    SET pass_marks <- 40, max_marks <- 100, pool <- 10, per_sub <- 5
 
-    FOR EACH student IN STUDENTS DO
-        UNPACK (roll, name, marks) <- student
-        IF ANY mark < 0 OR mark > MAX_MARKS THEN
-            RECORD invalid_student; CONTINUE
+    FOR EACH stu IN students DO
+        UNPACK (roll, name, marks) <- stu
+        IF ANY mark < 0 OR mark > max_marks THEN
+            APPEND to invalid; CONTINUE
         END IF
 
-        total_needed <- 0; eligible <- TRUE
-        FOR i <- 0 TO LENGTH(marks) - 1 DO
-            IF marks[i] < PASS THEN
-                gap <- PASS - marks[i]
+        total_needed <- 0; can_save <- TRUE
+        FOR EACH m IN marks DO
+            IF m < pass_marks THEN
+                gap <- pass_marks - m
                 total_needed <- total_needed + gap
-                IF gap > PER_SUB THEN eligible <- FALSE
+                IF gap > per_sub THEN can_save <- FALSE
             END IF
         END FOR
-        IF total_needed > POOL THEN eligible <- FALSE
+        IF total_needed > pool THEN can_save <- FALSE
 
         final_marks <- COPY(marks)
-        IF total_needed > 0 AND eligible THEN
-            FOR EACH failed subject i DO
-                final_marks[i] <- MIN(MAX_MARKS, final_marks[i] + (PASS - final_marks[i]))
+        IF total_needed > 0 AND can_save THEN
+            FOR i <- 0 TO LENGTH(final_marks) - 1 DO
+                IF final_marks[i] < pass_marks THEN
+                    final_marks[i] <- MIN(max_marks, pass_marks)
+                END IF
             END FOR
         END IF
 
-        Compute percentage and classify Distinction / First / Second / Pass / Fail
+        COMPUTE percentage and classify Distinction / First / Second / Pass / Fail
     END FOR
     PRINT result table and grace details
 END
@@ -83,164 +85,152 @@ Case Study 11: Examination Result and Grace-Mark Validation
 Name: Mareedu Paardhiv | Roll No: 26000626
 """
 
-SUBJECTS = ["Maths", "Physics", "Python", "Digital Logic", "English"]
-MAX_MARKS = 100
-PASS_MARKS = 40
-MAX_GRACE_POOL = 10
-MAX_GRACE_PER_SUBJECT = 5
+subjects = ["Maths", "Physics", "Python", "Digital Logic", "English"]
+max_marks = 100
+pass_marks = 40
+max_grace_pool = 10
+max_grace_per_subject = 5
 
 # Student records: (roll_no, name, marks_list)
-STUDENTS = [
+students = [
     ("26B01", "Nikhil Varma", [84, 79, 91, 76, 82]),
     ("26B02", "Bhavana Rao", [37, 65, 72, 38, 60]),    # needs 3 + 2 = 5 grace -> PASS
-    ("26B03", "Charan Teja", [35, 36, 37, 68, 70]),    # needs 5 + 4 + 3 = 12 > 10 -> FAIL
+    ("26B03", "Charan Teja", [35, 36, 37, 68, 70]),    # needs 12 > 10 -> FAIL
     ("26B04", "Keerthi S", [32, 74, 81, 69, 77]),      # Maths 32 needs 8 > 5 -> FAIL
-    ("26B05", "Prashanth K", [42, 41, 44, 40, 43]),    # just pass -> Pass Class
+    ("26B05", "Prashanth K", [42, 41, 44, 40, 43]),    # Pass Class
     ("26B06", "Swathi Reddy", [98, 95, 99, 92, 94]),   # Distinction
-    ("26B07", "Manoj Kumar", [54, 58, 36, 52, 61]),    # needs 4 grace in Python -> PASS
+    ("26B07", "Manoj Kumar", [54, 58, 36, 52, 61]),    # needs 4 in Python -> PASS
     ("26B08", "Bad Data", [50, 105, 60, 70, 80]),      # invalid (>100)
 ]
 
+results = []
+invalid = []
 
-def classify_percentage(pct, passed_all):
-    if not passed_all:
-        return "Fail"
-    if pct >= 75.0:
-        return "Distinction"
-    elif pct >= 60.0:
-        return "First Class"
-    elif pct >= 50.0:
-        return "Second Class"
-    else:
-        return "Pass Class"
+for stu in students:
+    roll, name, marks = stu
 
+    # Validate subject count and mark boundaries (0..100)
+    if len(marks) != len(subjects):
+        invalid.append((roll, name, "Subject count mismatch"))
+        continue
 
-def evaluate_student(student):
-    roll, name, marks = student
-
-    if len(marks) != len(SUBJECTS):
-        return (False, roll, name, "Subject count mismatch")
-
+    bad_mark = False
+    bad_val = 0
     for m in marks:
-        if m < 0 or m > MAX_MARKS:
-            return (False, roll, name, f"Mark {m} out of valid range 0..{MAX_MARKS}")
+        if m < 0 or m > max_marks:
+            bad_mark = True
+            bad_val = m
+            break
 
-    # Check failed subjects and compute grace needed
-    needed_list = []
+    if bad_mark:
+        invalid.append((roll, name, f"Mark {bad_val} out of valid range 0..{max_marks}"))
+        continue
+
+    # Check failed subjects and grace-mark eligibility
     total_needed = 0
-    can_save_with_grace = True
+    can_save = True
+    for m in marks:
+        if m < pass_marks:
+            gap = pass_marks - m
+            total_needed = total_needed + gap
+            if gap > max_grace_per_subject:
+                can_save = False
 
-    for i in range(len(marks)):
-        if marks[i] < PASS_MARKS:
-            shortfall = PASS_MARKS - marks[i]
-            needed_list.append((i, shortfall))
-            total_needed += shortfall
-            if shortfall > MAX_GRACE_PER_SUBJECT:
-                can_save_with_grace = False
-
-    if total_needed > MAX_GRACE_POOL:
-        can_save_with_grace = False
+    if total_needed > max_grace_pool:
+        can_save = False
 
     final_marks = []
     grace_used = []
-    for i in range(len(marks)):
-        final_marks.append(marks[i])
+    for m in marks:
+        final_marks.append(m)
         grace_used.append(0)
 
     grace_applied = 0
-    if len(needed_list) > 0 and can_save_with_grace:
-        for idx, shortfall in needed_list:
-            # Ensure marks never exceed MAX_MARKS
-            updated = min(MAX_MARKS, final_marks[idx] + shortfall)
-            grace_used[idx] = updated - final_marks[idx]
-            final_marks[idx] = updated
-            grace_applied += grace_used[idx]
+    if total_needed > 0 and can_save:
+        for i in range(len(final_marks)):
+            if final_marks[i] < pass_marks:
+                gap = pass_marks - final_marks[i]
+                updated = final_marks[i] + gap
+                if updated > max_marks:
+                    updated = max_marks
+                grace_used[i] = updated - final_marks[i]
+                final_marks[i] = updated
+                grace_applied = grace_applied + grace_used[i]
 
+    # Check final failed subjects and calculate division
     failed_subjects = []
     for i in range(len(final_marks)):
-        if final_marks[i] < PASS_MARKS:
-            failed_subjects.append(f"{SUBJECTS[i]}({final_marks[i]})")
+        if final_marks[i] < pass_marks:
+            failed_subjects.append(f"{subjects[i]}({final_marks[i]})")
 
-    passed_all = (len(failed_subjects) == 0)
-    total_score = sum(final_marks)
-    percentage = round((total_score / (len(SUBJECTS) * MAX_MARKS)) * 100.0, 2)
-    division = classify_percentage(percentage, passed_all)
+    total_score = 0
+    for m in final_marks:
+        total_score = total_score + m
 
-    return (
-        True,
-        (
-            roll,
-            name,
-            list(marks),
-            final_marks,
-            grace_used,
-            grace_applied,
-            total_score,
-            percentage,
-            division,
-            failed_subjects,
-        ),
-    )
+    pct = round((total_score / (len(subjects) * max_marks)) * 100.0, 2)
 
+    if len(failed_subjects) > 0:
+        division = "Fail"
+    elif pct >= 75.0:
+        division = "Distinction"
+    elif pct >= 60.0:
+        division = "First Class"
+    elif pct >= 50.0:
+        division = "Second Class"
+    else:
+        division = "Pass Class"
 
-def main():
-    results = []
-    invalid = []
+    results.append((roll, name, marks, final_marks, grace_used, grace_applied,
+                    total_score, pct, division, failed_subjects))
 
-    for stu in STUDENTS:
-        res = evaluate_student(stu)
-        if res[0]:
-            results.append(res[1])
-        else:
-            invalid.append((res[1], res[2], res[3]))
+print("=" * 96)
+print("                    EXAMINATION RESULT & GRACE-MARK VALIDATION REPORT")
+print("=" * 96)
+print(f"{'Roll':<7} {'Name':<14} {'Original Marks':<21} {'Final Marks':<21} "
+      f"{'Grace':>5} {'Total':>5} {'Pct%':>6}  {'Result'}")
+print("-" * 96)
 
-    print("=" * 96)
-    print("                    EXAMINATION RESULT & GRACE-MARK VALIDATION REPORT")
-    print("=" * 96)
-    print(f"{'Roll':<7} {'Name':<14} {'Original Marks':<21} {'Final Marks':<21} "
-          f"{'Grace':>5} {'Total':>5} {'Pct%':>6}  {'Result'}")
-    print("-" * 96)
+pass_count = 0
+grace_count = 0
 
-    pass_count = 0
-    grace_beneficiaries = 0
+for row in results:
+    roll, name, orig, final, g_used, g_total, tot, pct, div, failed = row
 
-    for row in results:
-        roll, name, orig, final, g_used, g_total, tot, pct, div, failed = row
-        orig_str = " ".join(f"{m:>3}" for m in orig)
-        final_str = " ".join(f"{m:>3}" for m in final)
-        print(f"{roll:<7} {name:<14} {orig_str:<21} {final_str:<21} "
-              f"{g_total:>5} {tot:>5} {pct:>6.2f}  {div}")
+    orig_str = ""
+    final_str = ""
+    for i in range(len(orig)):
+        orig_str = orig_str + f"{orig[i]:>3} "
+        final_str = final_str + f"{final[i]:>3} "
 
-        if div != "Fail":
-            pass_count += 1
-        if g_total > 0:
-            grace_beneficiaries += 1
+    print(f"{roll:<7} {name:<14} {orig_str:<21} {final_str:<21} "
+          f"{g_total:>5} {tot:>5} {pct:>6.2f}  {div}")
 
-    print("-" * 96)
-    print("\nGRACE-MARK & FAILURE DETAILS:")
-    for row in results:
-        roll, name, orig, final, g_used, g_total, tot, pct, div, failed = row
-        if g_total > 0:
-            details = []
-            for i in range(len(SUBJECTS)):
-                if g_used[i] > 0:
-                    details.append(f"{SUBJECTS[i]} +{g_used[i]} ({orig[i]}->{final[i]})")
-            print(f"  {roll} ({name}): Grace applied -> {', '.join(details)}")
-        elif len(failed) > 0:
-            print(f"  {roll} ({name}): Grace not eligible -> Failed in {', '.join(failed)}")
+    if div != "Fail":
+        pass_count = pass_count + 1
+    if g_total > 0:
+        grace_count = grace_count + 1
 
-    if len(invalid) > 0:
-        print("\nINVALID INPUT RECORDS:")
-        for roll, name, msg in invalid:
-            print(f"  {roll} ({name}): {msg}")
+print("-" * 96)
+print("\nGRACE-MARK & FAILURE DETAILS:")
+for row in results:
+    roll, name, orig, final, g_used, g_total, tot, pct, div, failed = row
+    if g_total > 0:
+        details = []
+        for i in range(len(subjects)):
+            if g_used[i] > 0:
+                details.append(f"{subjects[i]} +{g_used[i]} ({orig[i]}->{final[i]})")
+        print(f"  {roll} ({name}): Grace applied -> {', '.join(details)}")
+    elif len(failed) > 0:
+        print(f"  {roll} ({name}): Grace not eligible -> Failed in {', '.join(failed)}")
 
-    print("-" * 96)
-    print(f"Summary: {pass_count} Passed ({grace_beneficiaries} via grace), "
-          f"{len(results) - pass_count} Failed, {len(invalid)} Invalid.")
+if len(invalid) > 0:
+    print("\nINVALID INPUT RECORDS:")
+    for roll, name, msg in invalid:
+        print(f"  {roll} ({name}): {msg}")
 
-
-if __name__ == "__main__":
-    main()
+print("-" * 96)
+print(f"Summary: {pass_count} Passed ({grace_count} via grace), "
+      f"{len(results) - pass_count} Failed, {len(invalid)} Invalid.")
 ```
 
 ## 8. Test Cases
@@ -251,8 +241,7 @@ if __name__ == "__main__":
 | TC-02 | Two borderline subjects (26B02: 37, 38) | Receives +3 and +2 = 5 grace; passes as Second Class | PASS |
 | TC-03 | Pool exceeded (26B03: needs 12 > 10) | Grace withheld; remains Fail with failed subjects listed | PASS |
 | TC-04 | Single subject cap exceeded (26B04: 32 needs 8 > 5) | Grace withheld; remains Fail | PASS |
-| TC-05 | Out-of-range mark 105 (26B08) | Rejected before result processing | PASS |
-| TC-06 | Pass Class lower bound (26B05: 42%) | Classified accurately as Pass Class | PASS |
+| TC-05 | Out-of-range mark 105 (26B08) & summary | Rejected before result processing; 5 Passed, 2 Failed | PASS |
 
 Run automated tests: `python3 Case_11_Exam_Grace_Marks/test_cases.py`
 
@@ -294,4 +283,4 @@ Summary: 5 Passed (2 via grace), 2 Failed, 1 Invalid.
 
 ## 10. Conclusion
 
-The program automates exam moderation consistently by checking both per-subject and total grace caps before updating marks. Boundary validation prevents marks above 100 from entering results.
+The script applies exam grace rules consistently using loops, lists, and conditional checks while preventing invalid scores (>100) from entering final classifications.

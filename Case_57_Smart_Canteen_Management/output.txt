@@ -4,7 +4,6 @@
 
   MENU: 1. View Stock  2. Place Order  3. Order History  4. Daily Summary  5. Exit
   Enter choice (1-5): 
-
   ----------------------------------------------------------
   Code   Item Name           Price(Rs)  Available     Sold
   ----------------------------------------------------------
@@ -64,7 +63,6 @@
 
   MENU: 1. View Stock  2. Place Order  3. Order History  4. Daily Summary  5. Exit
   Enter choice (1-5): 
-
   ==========================================================
                DAILY CANTEEN SALES & STOCK SUMMARY
   ==========================================================
